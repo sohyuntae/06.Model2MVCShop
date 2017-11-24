@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.websocket.Session;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,8 +19,10 @@ import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Search;
 import com.model2.mvc.service.domain.Product;
 import com.model2.mvc.service.domain.Purchase;
+import com.model2.mvc.service.domain.User;
 import com.model2.mvc.service.product.ProductService;
 import com.model2.mvc.service.purchase.PurchaseService;
+import com.model2.mvc.service.user.UserService;
 
 
 
@@ -36,13 +39,16 @@ public class PurchaseController {
 	@Qualifier("productServiceImpl")
 	private ProductService productService;
 	
+	@Autowired
+	@Qualifier("userServiceImpl")
+	private UserService userService;
 	
 	//setter Method 구현 않음
 		
 	public PurchaseController(){
 		System.out.println(this.getClass());
 	}
-	
+
 	//==> classpath:config/common.properties  ,  classpath:config/commonservice.xml 참조 할것
 	//==> 아래의 두개를 주석을 풀어 의미를 확인 할것
 	@Value("#{commonProperties['pageUnit']}")
@@ -55,27 +61,38 @@ public class PurchaseController {
 	
 	
 	@RequestMapping("/addPurchaseView.do")
-	public String addPurchaseView(@RequestParam("prodNo") int prodNo , Model model) throws Exception {
+	public String addPurchaseView(@RequestParam("prodNo") int prodNo ,
+											Model model,HttpSession session) throws Exception {
 		
 		System.out.println("/addPurchasetView.do");
 		
-		Product product = productService.getProduct(prodNo);
+		Product product = productService.getProduct(prodNo);	
+		User user = (User)session.getAttribute("user");
 		
-		model.addAttribute("product",product);
 		
+		model.addAttribute("product", product);
+		model.addAttribute("user", user);
 		return "forward:/purchase/addPurchaseView.jsp";
 	}
-	
-	@RequestMapping("/addPurchase.do")
-	public String addPurchase( @ModelAttribute("purchase") Purchase purchase ) throws Exception {
 
+	@RequestMapping("/addPurchase.do")
+	public String addPurchase( @RequestParam("prodNo") int prodNo ,
+								@ModelAttribute("purchase") Purchase purchase, Model model ) throws Exception {
+		
 		System.out.println("/addPurchase.do");
 		//Business Logic
+		
+		Product product = productService.getProduct(prodNo);
+		
+		purchase.setPurchaseProd(product);
+		
 		purchaseService.addPurchase(purchase);
+		
+		model.addAttribute("purchase",purchase);
 		
 		return "forward:/purchase/addPurchase.jsp";
 	}
-	
+
 /*	@RequestMapping("/getProduct.do")
 	public String getProduct( @RequestParam("prodNo") int prodNo , 
 								@RequestParam("menu") String menu ,Model model ) throws Exception {

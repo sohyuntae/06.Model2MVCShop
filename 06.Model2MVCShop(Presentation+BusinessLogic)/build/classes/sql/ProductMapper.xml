@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--	
+	UserMapper.xml :: SQL 를 갖는 MetaData 
+	
+	- MyBatis Framework 은 XML MetaData 를 사용 SQL구문을 관리
+	  (SQL은 xml 을 통해 적절히 캡슐화 되어 애플리케이선 외부로 분리함)
+	- SQL문의 입력(?) / 출력(?)을 매핑한다.  <== 아래의 select element 참조
+ -->		
+ 					
+<mapper namespace="ProductMapper">
+
+  	<resultMap id="productSelectMap" type="product" >
+  		<result property="prodNo" column ="prod_no" jdbcType ="INTEGER"/>
+  		<result property="prodName" column ="prod_name" jdbcType ="VARCHAR"/>
+  		<result property="prodDetail" column ="prod_detail" jdbcType ="VARCHAR"/>
+  		<result property="manuDate" column ="manufacture_day" jdbcType ="VARCHAR"/>
+  		<result property="price" column ="price" jdbcType ="INTEGER"/>
+  		<result property="fileName" column ="image_file" jdbcType ="VARCHAR"/>
+  		<result property="regDate" column ="reg_date" jdbcType ="DATE"/>
+  	
+  	</resultMap>	
+  	
+   	<insert id="addProduct"	parameterType= "product">
+		INSERT
+		INTO product(prod_no,prod_name,prod_detail,manufacture_day,price,image_file,reg_date)
+		VALUES(	seq_product_prod_no.nextval,
+				#{prodName},
+				#{prodDetail},
+				#{manuDate},
+				#{price:INTEGER},
+				#{fileName},
+				SYSDATE )
+  	</insert>  	
+  	
+  	<select id="getProduct"	parameterType="int" resultMap ="productSelectMap">
+		SELECT
+		prod_no,prod_name,prod_detail,manufacture_day,price,image_file,reg_date	
+		FROM product
+		WHERE prod_no = #{value}
+	</select>  
+
+	<update id="updateProduct" parameterType = "product">
+  		UPDATE product
+  	<set>
+  	  prod_name =#{prodName},
+  	  prod_detail =#{prodDetail},
+  	  manufacture_day =#{manuDate},
+  	  price=#{price},
+  	  image_file=#{fileName}
+  	</set>
+  	WHERE prod_no = #{prodNo}
+  	</update> 
+	
+	<select  id="getProductList"  parameterType="search"	resultMap="productSelectMap">
+	   	SELECT *
+	  	FROM (	SELECT inner_table.* , ROWNUM AS row_seq
+	  					FROM		(	SELECT p.prod_no , p.prod_name , p.price, p.reg_date, t.tran_status_code 
+											 FROM product p LEFT OUTER JOIN transaction t
+											 ON p.prod_no = t.prod_no
+											<if test="searchCondition != null">
+												<where>
+													<if test="searchCondition == 0 and searchKeyword !='' ">
+										 				prod_no = #{searchKeyword}
+													</if>
+													<if test="searchCondition == 1 and searchKeyword !='' ">
+										 				prod_name = #{searchKeyword}
+													</if>
+													<if test="searchCondition == 2 and searchKeyword !='' ">
+										 				price = #{searchKeyword}
+													</if>
+												</where>
+											</if>
+											ORDER BY 1  ) inner_table
+						WHERE ROWNUM &lt;= #{endRowNum} )
+		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum}  
+	 </select>
+	 
+	<delete id="removeProduct" parameterType="int">
+  	DELETE
+  	FROM product
+  	WHERE prod_no = #{value}
+  	</delete>
+  	
+	<select  id="getTotalCount"  parameterType="search"	 resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM(	SELECT p.prod_no , p.prod_name , p.price, p.manufacture_day, t.tran_status_code 
+											 FROM product p LEFT OUTER JOIN transaction t
+											 ON p.prod_no = t.prod_no
+											<if test="searchCondition != null">
+												<where>
+													<if test="searchCondition == 0 and searchKeyword !='' ">
+										 				prod_no = #{searchKeyword}
+													</if>
+													<if test="searchCondition == 1 and searchKeyword !='' ">
+										 				prod_name = #{searchKeyword}
+													</if>
+													<if test="searchCondition == 2 and searchKeyword !='' ">
+										 				price = #{searchKeyword}
+													</if>
+												</where>
+											</if>
+											ORDER BY 1 ) countTable						
+	 </select> 
+	
+</mapper>
