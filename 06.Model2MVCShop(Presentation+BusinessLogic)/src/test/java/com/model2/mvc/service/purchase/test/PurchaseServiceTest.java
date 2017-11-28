@@ -90,7 +90,7 @@ public class PurchaseServiceTest {
 		purchase.setReceiverName("Á¤¼öºó¾¾");
 		purchase.setDivyRequest("µÎ»êÀÌÅ»Çß½À´Ï´Ù.");
 		
-		purchaseService.updatePurcahse(purchase);
+		purchaseService.updatePurchase(purchase);
 		
 		purchase = purchaseService.getPurchase(10020);
 		System.out.println(purchase);

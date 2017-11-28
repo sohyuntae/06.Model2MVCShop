@@ -72,10 +72,12 @@
 		<td width="104" class="ct_write">구매방법</td>
 		<td bgcolor="D6D6D6" width="1"></td>
 		<td class="ct_write01">
-		<c:if test="${purchase.paymentOption.trim()=='1' }"/>
+		<c:if test="${purchase.paymentOption.trim()=='1' }">
 			현금구매
-		<c:if test="${purchase.paymentOption.trim()=='2' }"/>
+			</c:if>
+		<c:if test="${purchase.paymentOption.trim()=='2' }">
 			신용구매
+			</c:if>
 			<%--<%if(purchase.getPaymentOption().trim().equals("1")) { %>
 			현금구매
 			<%}else { %>
@@ -131,7 +133,7 @@
 	<tr>
 		<td width="104" class="ct_write">주문일</td>
 		<td bgcolor="D6D6D6" width="1"></td>
-		<td class="ct_write01">${purchase.orderDate}</td>
+		<td class="ct_write01">${purchase.orderDate }</td>
 	</tr>
 
 	<tr>

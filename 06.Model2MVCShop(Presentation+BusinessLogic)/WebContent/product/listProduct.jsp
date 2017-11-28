@@ -146,7 +146,7 @@ function fncGetList(currentPage) {
 	<c:if test="${param.menu == 'manage'}">
 		<c:if test="${product.proTranCode ==null }">판매중</c:if>
 		<c:if test="${product.proTranCode =='1  '}">구매완료 
-		<a href="updateTranCode.do?prodNo=${product.prodNo}&tranCode=2">배송하기</a></c:if>
+		<a href="updateTranCodeByProd.do?prodNo=${product.prodNo}&tranCode=2">배송하기</a></c:if>
 		<c:if test="${product.proTranCode =='2  '}">배송중</c:if>
 		<c:if test="${product.proTranCode =='3  '}">배송완료</c:if>
 	</c:if>		

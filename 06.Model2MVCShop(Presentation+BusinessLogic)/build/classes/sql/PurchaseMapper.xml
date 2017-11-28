@@ -49,9 +49,9 @@
 	<select id="getPurchase"	parameterType="int" resultMap ="purchaseSelectMap">
 		SELECT
 		tran_no,prod_no,buyer_id,payment_option,receiver_name,receiver_phone,
-							dlvy_addr,dlvy_request,tran_status_code,order_data,dlvy_date	
+			dlvy_addr,dlvy_request,tran_status_code,order_data,dlvy_date
 		FROM transaction
-		WHERE tran_no = #{value}
+		WHERE tran_no = #{tranNo}
 	</select>
 	
 	<select id="getPurchase2"	parameterType="int" resultMap ="purchaseSelectMap">
